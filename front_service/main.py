@@ -1,22 +1,16 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
-import requests
-
+from front_service.routes.address_router import router as address_router
+from front_service.routes.health_router import route as health_router
+from front_service.routes.user_router import router as user_router
 
 app = FastAPI()
+app.include_router(router=address_router)
+app.include_router(router=health_router)
+app.include_router(router=user_router)
 
 
-@app.get("/")
+@app.get("/", tags=["Home"])
 async def hello():
     return {"Greetings": "Hello world"}
-
-
-@app.get("/inner-server")
-async def communicate_inner_server():
-    response = requests.get("http://127.0.0.1:9856")
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        raise HTTPEception("Something went wrong")
 
