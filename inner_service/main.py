@@ -1,5 +1,7 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, Depends, Query, status
+from sqlalchemy.orm import Session
 
+from data.database import get_db
 from route.address_router import router as address_router
 from route.user_router import router as user_router
 
@@ -14,6 +16,9 @@ app.include_router(router=user_router)
     tags=["Home"],
     summary="Home of application"
 )
-async def home() -> dict:
+async def home(
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
+) -> dict:
     return {"directory": "home"}
 
