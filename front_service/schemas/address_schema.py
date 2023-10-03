@@ -1,8 +1,6 @@
-from typing import Optional, List
+from typing import Optional
 
 from pydantic import BaseModel, Field
-
-from front_service.schemas.user_schema import UserRequest, UserResponse
 
 
 class AddressBase(BaseModel):
@@ -18,14 +16,6 @@ class AddressRequest(AddressBase):
     pass
 
 
-class AddressRequestUsers(AddressRequest):
-    users: List[UserRequest] = Field(..., min_items=1, max_items=19)
-
-
 class AddressResponse(AddressBase):
     id_address: int = Field(..., gt=0)
     dropped: bool = Field(False)
-
-
-class AddressResponseUser(AddressResponse):
-    users: List[UserResponse] = Field(..., min_items=1, max_items=19)

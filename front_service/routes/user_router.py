@@ -2,9 +2,9 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Body, Path, Query, status
 
-from front_service.schemas.user_schema import UserResponse, UserRequest, UserResponseAddress, \
-    UserRequestAddresses
-from front_service.schemas.generic_schemas import BasicResponse
+from schemas.user_schema import UserResponse, UserRequest
+from schemas.compose_schemas import UserResponseAddress, UserRequestAddresses
+from schemas.generic_schemas import BasicResponse
 
 router = APIRouter(prefix="/user", tags=["User"])
 

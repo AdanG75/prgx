@@ -2,9 +2,9 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Body, Path, Query, status
 
-from front_service.schemas.address_schema import AddressResponse, AddressRequest, AddressResponseUser, \
-    AddressRequestUsers
-from front_service.schemas.generic_schemas import BasicResponse
+from schemas.address_schema import AddressResponse, AddressRequest
+from schemas.compose_schemas import AddressResponseUser, AddressRequestUsers
+from schemas.generic_schemas import BasicResponse
 
 router = APIRouter(prefix="/address", tags=["Address"])
 

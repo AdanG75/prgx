@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 
 import requests
 
-from front_service.core.app_constants import BASE_URL
+from core.app_constants import BASE_URL
 
 route = APIRouter(prefix="/health", tags=["Health"])
 
