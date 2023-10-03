@@ -748,3 +748,10 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,macos,jetbrains,intellij,pycharm,visualstudiocode,visualstudio
 v
+
+### Enviromental Variables ###
+!/.env
+./.env
+.env
+*.env
+./*.env
