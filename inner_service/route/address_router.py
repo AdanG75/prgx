@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Body, Path, Query, status, Depends
 from sqlalchemy.orm import Session
 
-from controller import address_controller, user_address_controller
+from controller import address_controller, user_address_controller, batch_controller
 from data.database import get_db
 from schemas.address_schema import AddressResponse, AddressRequest
 from schemas.compose_schemas import AddressResponseUser, AddressRequestUsers
@@ -109,7 +109,8 @@ async def create_address(
 )
 async def create_address_with_users(
         address_schema: AddressRequestUsers = Body(...),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> AddressResponseUser:
     """
         POST an address with users who lived there, using the request body sent by the customer
@@ -124,7 +125,9 @@ async def create_address_with_users(
         **Response**
         - Return a response body of type \'AddressResponseUser\' with status code 201
     """
-    pass
+    response = batch_controller.create_address_with_users(db, address_schema)
+
+    return response
 
 
 @router.patch(

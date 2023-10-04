@@ -19,6 +19,6 @@ def _commit_changes(db: Session, element: Base, execute: str = "now") -> Base:
             db.refresh(element)
         except Exception as e:
             print(e)
-            raise GENERIC_DB_EXCEPTION
+            raise BAD_DATA
 
     return element

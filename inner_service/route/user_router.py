@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Path, Query, status, Depends
 from sqlalchemy.orm import Session
 
 from data.database import get_db
-from controller import user_controller, user_address_controller
+from controller import user_controller, user_address_controller, batch_controller
 from schemas.user_schema import UserResponse, UserRequest
 from schemas.compose_schemas import UserResponseAddress, UserRequestAddresses
 from schemas.generic_schemas import BasicResponse
@@ -109,7 +109,8 @@ async def create_user(
 )
 async def create_user_with_addresses(
         user_schema: UserRequestAddresses = Body(...),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> UserResponseAddress:
     """
         POST a user with its addresses, using the request body sent by the customer
@@ -124,7 +125,9 @@ async def create_user_with_addresses(
         **Response**
         - Return a response body of type \'UserResponseAddress\' with status code 201
     """
-    pass
+    response = batch_controller.create_user_with_addresses(db, user_schema)
+
+    return response
 
 
 @router.patch(

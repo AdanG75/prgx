@@ -12,5 +12,5 @@ BAD_DATA = HTTPException(
 
 GENERIC_DB_EXCEPTION = HTTPException(
     detail="Something went wrong with the data base",
-    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    status_code=status.HTTP_400_BAD_REQUEST
 )
