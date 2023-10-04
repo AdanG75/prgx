@@ -10,7 +10,7 @@ You need to have previously installed python 3.7+ (with pip) and Postgres13+
 
 Clone the repository:
     
-    sds
+    git clone https://github.com/AdanG75/prgx.git
 
 Go to root directory:
     
