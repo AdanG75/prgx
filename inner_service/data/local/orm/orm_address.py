@@ -37,6 +37,12 @@ def get_address_by_country(db: Session, country: str) -> List[Type[DBAddress]]:
     return addresses
 
 
+def is_address_dropped(db: Session, id_address: int) -> bool:
+    db_address = get_address_by_id(db, id_address)
+
+    return db_address.dropped
+
+
 def create_address(db: Session, address: AddressRequest, execute: str = "now") -> DBAddress:
     new_address = DBAddress(
         address_1=address.address_1,
@@ -76,7 +82,3 @@ def delete_address(db: Session, id_address: int, execute: str = "now") -> DBAddr
     db_address = _commit_changes(db, db_address, execute)
 
     return db_address
-
-
-
-

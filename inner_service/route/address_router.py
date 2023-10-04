@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Body, Path, Query, status, Depends
 from sqlalchemy.orm import Session
 
-from controller import address_controller
+from controller import address_controller, user_address_controller
 from data.database import get_db
 from schemas.address_schema import AddressResponse, AddressRequest
 from schemas.compose_schemas import AddressResponseUser, AddressRequestUsers
@@ -169,7 +169,8 @@ async def update_address(
 async def assign_user_to_address(
         id_address: int = Path(..., gt=0),
         id_user: int = Path(..., gt=0),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> BasicResponse:
     """
         PUT a user into an address
@@ -183,9 +184,15 @@ async def assign_user_to_address(
         data is from Main Database
 
         **Response**
-        - Return a response body of type \'BasicResponse\' with status code 201
+        - Return a response body of type \'BasicResponse\' with status code 201. If successful is False means that
+        assign was created but an element or both, user or address, are dropped.
     """
-    pass
+    result = user_address_controller.assign_relationship_user_address(db, id_user, id_address)
+
+    return BasicResponse(
+        operation="Assign user to address",
+        successful=result.valid
+    )
 
 
 @router.delete(
