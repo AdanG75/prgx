@@ -14,12 +14,15 @@ def get_all_addresses(db: Session) -> List[Type[DBAddress]]:
     return addresses
 
 
-def get_address_by_id(db: Session, id_address: int) -> Type[DBAddress]:
-    address: Type[DBAddress] = (db.query(DBAddress)
-                                .where(
-                                    DBAddress.id == id_address,
-                                    DBAddress.dropped == False
-                                ).one_or_none())
+def get_address_by_id(db: Session, id_address: int, dropped: bool = False) -> Type[DBAddress]:
+    if dropped:
+        address: Type[DBAddress] = db.query(DBAddress).where(DBAddress.id == id_address).one_or_none()
+    else:
+        address: Type[DBAddress] = (db.query(DBAddress)
+                                    .where(
+                                        DBAddress.id == id_address,
+                                        DBAddress.dropped == False
+                                    ).one_or_none())
 
     if address is None:
         raise NOT_FOUND
@@ -38,7 +41,7 @@ def get_address_by_country(db: Session, country: str) -> List[Type[DBAddress]]:
 
 
 def is_address_dropped(db: Session, id_address: int) -> bool:
-    db_address = get_address_by_id(db, id_address)
+    db_address = get_address_by_id(db, id_address, True)
 
     return db_address.dropped
 

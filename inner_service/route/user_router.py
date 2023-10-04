@@ -1,7 +1,10 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Body, Path, Query, status
+from fastapi import APIRouter, Body, Path, Query, status, Depends
+from sqlalchemy.orm import Session
 
+from data.database import get_db
+from controller import user_controller, user_address_controller
 from schemas.user_schema import UserResponse, UserRequest
 from schemas.compose_schemas import UserResponseAddress, UserRequestAddresses
 from schemas.generic_schemas import BasicResponse
@@ -17,7 +20,8 @@ router = APIRouter(prefix="/user", tags=["User"])
 )
 async def get_all_users(
         country: Optional[str] = Query(None, min_length=2, max_length=49),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> List[UserResponse]:
     """
         GET all users of the system
@@ -32,11 +36,11 @@ async def get_all_users(
         - Return a response body of type List[\'UserResponse\'] with status code 200
     """
     if country is None:
-        pass
+        response = user_controller.get_users(db)
     else:
-        pass
+        response = []
 
-    return []
+    return response
 
 
 @router.get(
@@ -47,7 +51,8 @@ async def get_all_users(
 )
 async def get_user(
         id_user: int = Path(..., gt=0),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> UserResponse:
     """
     GET a user with specific ID
@@ -62,7 +67,9 @@ async def get_user(
     **Response**
     - Return a response body of type \'UserResponse\' with status code 200
     """
-    pass
+    response = user_controller.get_user_by_id(db, id_user)
+
+    return response
 
 
 @router.post(
@@ -73,7 +80,8 @@ async def get_user(
 )
 async def create_user(
         user_schema: UserRequest = Body(...),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> UserResponse:
     """
         POST a user using the request body sent by the customer
@@ -88,7 +96,9 @@ async def create_user(
         **Response**
         - Return a response body of type \'UserResponse\' with status code 201
     """
-    pass
+    response = user_controller.create_user(db, user_schema)
+
+    return response
 
 
 @router.post(
@@ -126,7 +136,8 @@ async def create_user_with_addresses(
 async def update_user(
         id_user: int = Path(..., gt=0),
         user_schema: UserRequest = Body(...),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> UserResponse:
     """
         PATCH a user in order to update its data
@@ -144,7 +155,9 @@ async def update_user(
         **Response**
         - Return a response body of type \'UserResponse\' with status code 200
     """
-    pass
+    response = user_controller.update_user(db, id_user, user_schema)
+
+    return response
 
 
 @router.put(
@@ -156,7 +169,8 @@ async def update_user(
 async def assign_address_to_user(
         id_user: int = Path(..., gt=0),
         id_address: int = Path(..., gt=0),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> BasicResponse:
     """
         PUT an address into a user
@@ -170,9 +184,15 @@ async def assign_address_to_user(
         data is from Main Database
 
         **Response**
-        - Return a response body of type \'BasicResponse\' with status code 201
+        - Return a response body of type \'BasicResponse\' with status code 201. If successful is False means that
+        assign was created but an element or both, user or address, are dropped.
     """
-    pass
+    result = user_address_controller.assign_relationship_user_address(db, id_user, id_address)
+
+    return BasicResponse(
+        operation="Assign address to user",
+        successful=result.valid
+    )
 
 
 @router.delete(
@@ -183,7 +203,8 @@ async def assign_address_to_user(
 )
 async def delete_user(
         id_user: int = Path(..., gt=0),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> BasicResponse:
     """
         DELETE the user with specific ID
@@ -198,4 +219,9 @@ async def delete_user(
         **Response**
         - Return a response body of type \'BasicResponse\' with status code 200
     """
-    pass
+    result = user_controller.delete_user(db, id_user)
+
+    return BasicResponse(
+        operation="Delete user",
+        successful=result.dropped
+    )
