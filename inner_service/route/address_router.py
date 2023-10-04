@@ -1,7 +1,10 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Body, Path, Query, status
+from fastapi import APIRouter, Body, Path, Query, status, Depends
+from sqlalchemy.orm import Session
 
+from controller import address_controller
+from data.database import get_db
 from schemas.address_schema import AddressResponse, AddressRequest
 from schemas.compose_schemas import AddressResponseUser, AddressRequestUsers
 from schemas.generic_schemas import BasicResponse
@@ -17,7 +20,8 @@ router = APIRouter(prefix="/address", tags=["Address"])
 )
 async def get_all_addresses(
         country: Optional[str] = Query(None, min_length=2, max_length=49),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> List[AddressResponse]:
     """
         GET all addresses of the system
@@ -32,11 +36,11 @@ async def get_all_addresses(
         - Return a response body of type List[\'AddressResponse\'] with status code 200
     """
     if country is None:
-        pass
+        response = address_controller.get_addresses(db)
     else:
-        pass
+        response = address_controller.get_address_by_country(db, country)
 
-    return []
+    return response
 
 
 @router.get(
@@ -47,13 +51,14 @@ async def get_all_addresses(
 )
 async def get_address(
         id_address: int = Path(..., gt=0),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> AddressResponse:
     """
     GET an address with specific ID
 
     **Path Parameter**
-    -id_user(int): Field that specify the address to be retrieved
+    -id_address(int): Field that specify the address to be retrieved
 
     **Query Parameter**
     - test(bool): If test is True, the system fetch data into Test DataBase, in other case,
@@ -62,7 +67,9 @@ async def get_address(
     **Response**
     - Return a response body of type \'AddressResponse\' with status code 200
     """
-    pass
+    response = address_controller.get_address_by_id(db, id_address)
+
+    return response
 
 
 @router.post(
@@ -73,7 +80,8 @@ async def get_address(
 )
 async def create_address(
         address_schema: AddressRequest = Body(...),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> AddressResponse:
     """
         POST an address using the request body sent by the customer
@@ -88,7 +96,9 @@ async def create_address(
         **Response**
         - Return a response body of type \'AddressResponse\' with status code 201
     """
-    pass
+    response = address_controller.create_address(db, address_schema)
+
+    return response
 
 
 @router.post(
@@ -126,7 +136,8 @@ async def create_address_with_users(
 async def update_address(
         id_address: int = Path(..., gt=0),
         address_schema: AddressRequest = Body(...),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> AddressResponse:
     """
         PATCH an address in order to update its data
@@ -144,7 +155,9 @@ async def update_address(
         **Response**
         - Return a response body of type \'AddressResponse\' with status code 200
     """
-    pass
+    response = address_controller.update_address(db, id_address, address_schema)
+
+    return response
 
 
 @router.put(
@@ -183,7 +196,8 @@ async def assign_user_to_address(
 )
 async def delete_address(
         id_address: int = Path(..., gt=0),
-        test: bool = Query(False)
+        test: bool = Query(False),
+        db: Session = Depends(get_db)
 ) -> BasicResponse:
     """
         DELETE the address with specific ID
@@ -198,4 +212,9 @@ async def delete_address(
         **Response**
         - Return a response body of type \'BasicResponse\' with status code 200
     """
-    pass
+    result = address_controller.delete_address(db, id_address)
+
+    return BasicResponse(
+        operation="Delete address",
+        successful=result.dropped
+    )

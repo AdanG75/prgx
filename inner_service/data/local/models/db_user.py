@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, Boolean, Integer
-from  sqlalchemy.orm import relationship
 
 from data.database import Base
-from data.local.models.db_user_address import DBUserAddress
 
 
 class DBUser(Base):
@@ -13,9 +11,3 @@ class DBUser(Base):
     email = Column(String)
     password = Column(String)
     dropped = Column(Boolean)
-
-    addresses = relationship(
-        'data.local.models,db_address.DBAddress',
-        secondary=DBUserAddress,
-        back_populates="users"
-    )

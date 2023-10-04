@@ -11,11 +11,15 @@ class AddressBase(BaseModel):
     zip_code: str = Field(..., min_length=4, max_length=8)
     country: str = Field(..., min_length=2, max_length=49)
 
+    model_config = {
+        "from_attributes": True
+    }
+
 
 class AddressRequest(AddressBase):
     pass
 
 
 class AddressResponse(AddressBase):
-    id_address: int = Field(..., gt=0)
+    id: int = Field(..., gt=0)
     dropped: bool = Field(False)
