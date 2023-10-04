@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Body, Path, Query, status
 
+from controller import address_controller
 from schemas.address_schema import AddressResponse, AddressRequest
 from schemas.compose_schemas import AddressResponseUser, AddressRequestUsers
 from schemas.generic_schemas import BasicResponse
@@ -16,7 +17,8 @@ router = APIRouter(prefix="/address", tags=["Address"])
     summary="Get all addresses"
 )
 async def get_all_addresses(
-        country: Optional[str] = Query(None, min_length=2, max_length=49)
+        country: Optional[str] = Query(None, min_length=2, max_length=49),
+        test: bool = Query(False)
 ) -> List[AddressResponse]:
     """
         GET all addresses of the system
@@ -29,11 +31,11 @@ async def get_all_addresses(
         - Return a response body of type List[\'AddressResponse\'] with status code 200
     """
     if country is None:
-        pass
+        response = address_controller.get_addresses(test)
     else:
-        pass
+        response = address_controller.get_address_by_country(country, test)
 
-    return []
+    return response
 
 
 @router.get(
@@ -43,7 +45,8 @@ async def get_all_addresses(
     summary="Get an address via its ID"
 )
 async def get_address(
-        id_address: int = Path(..., gt=0)
+        id_address: int = Path(..., gt=0),
+        test: bool = Query(False)
 ) -> AddressResponse:
     """
     GET an address with specific ID
@@ -51,7 +54,9 @@ async def get_address(
     **Response**
     - Return a response body of type \'AddressResponse\' with status code 200
     """
-    pass
+    response = address_controller.get_address_by_id(id_address, test)
+
+    return response
 
 
 @router.post(
@@ -61,7 +66,8 @@ async def get_address(
     summary="Create an Address"
 )
 async def create_address(
-        address_schema: AddressRequest = Body(...)
+        address_schema: AddressRequest = Body(...),
+        test: bool = Query(False)
 ) -> AddressResponse:
     """
         POST an address using the request body sent by the customer
@@ -72,7 +78,9 @@ async def create_address(
         **Response**
         - Return a response body of type \'AddressResponse\' with status code 201
     """
-    pass
+    response = address_controller.create_address(address_schema, test)
+
+    return response
 
 
 @router.post(
@@ -82,7 +90,8 @@ async def create_address(
     summary="Create an Address with users who lived there"
 )
 async def create_address_with_users(
-        address_schema: AddressRequestUsers = Body(...)
+        address_schema: AddressRequestUsers = Body(...),
+        test: bool = Query(False)
 ) -> AddressResponseUser:
     """
         POST an address with users who lived there, using the request body sent by the customer
@@ -93,7 +102,9 @@ async def create_address_with_users(
         **Response**
         - Return a response body of type \'AddressResponseUser\' with status code 201
     """
-    pass
+    response = address_controller.create_address_with_users(address_schema, test)
+
+    return response
 
 
 @router.patch(
@@ -104,7 +115,8 @@ async def create_address_with_users(
 )
 async def update_address(
         id_address: int = Path(..., gt=0),
-        address_schema: AddressRequest = Body(...)
+        address_schema: AddressRequest = Body(...),
+        test: bool = Query(False)
 ) -> AddressResponse:
     """
         PATCH an address in order to update its data
@@ -118,7 +130,9 @@ async def update_address(
         **Response**
         - Return a response body of type \'AddressResponse\' with status code 200
     """
-    pass
+    response = address_controller.update_address(id_address, address_schema, test)
+
+    return response
 
 
 @router.put(
@@ -129,7 +143,8 @@ async def update_address(
 )
 async def assign_user_to_address(
         id_address: int = Path(..., gt=0),
-        id_user: int = Path(..., gt=0)
+        id_user: int = Path(..., gt=0),
+        test: bool = Query(False)
 ) -> BasicResponse:
     """
         PUT a user into an address
@@ -141,7 +156,9 @@ async def assign_user_to_address(
         **Response**
         - Return a response body of type \'BasicResponse\' with status code 201
     """
-    pass
+    response = address_controller.assign_user_into_address(id_address, id_user, test)
+
+    return response
 
 
 @router.delete(
@@ -151,7 +168,8 @@ async def assign_user_to_address(
     summary="Delete a specific address"
 )
 async def delete_address(
-        id_address: int = Path(..., gt=0)
+        id_address: int = Path(..., gt=0),
+        test: bool = Query(False)
 ) -> BasicResponse:
     """
         DELETE the address with specific ID
@@ -162,4 +180,6 @@ async def delete_address(
         **Response**
         - Return a response body of type \'BasicResponse\' with status code 200
     """
-    pass
+    response = address_controller.delete_address(id_address, test)
+
+    return response

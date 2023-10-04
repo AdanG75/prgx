@@ -13,6 +13,10 @@ class UserRequestAddresses(UserRequest):
 class UserResponseAddress(UserResponse):
     addresses: List[AddressResponse] = Field(..., min_items=1, max_items=19)
 
+    model_config = {
+        "from_attributes": True
+    }
+
 
 class AddressRequestUsers(AddressRequest):
     users: List[UserRequest] = Field(..., min_items=1, max_items=19)
@@ -20,3 +24,7 @@ class AddressRequestUsers(AddressRequest):
 
 class AddressResponseUser(AddressResponse):
     users: List[UserResponse] = Field(..., min_items=1, max_items=19)
+
+    model_config = {
+        "from_attributes": True
+    }
