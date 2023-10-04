@@ -38,7 +38,7 @@ async def get_all_users(
     if country is None:
         response = user_controller.get_users(db)
     else:
-        response = []
+        response = user_address_controller.get_users_by_country(db, country)
 
     return response
 

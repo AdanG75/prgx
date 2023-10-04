@@ -1,3 +1,5 @@
+from typing import List, Type
+
 from sqlalchemy.orm import Session
 
 from data.local.models.db_user_address import DBUserAddress
@@ -18,3 +20,14 @@ def assign_relationship_user_address(
     new_user_address = _commit_changes(db, new_user_address, execute)
 
     return new_user_address
+
+
+def get_users_by_country(db: Session, country: str) -> List[Type[DBUser]]:
+    users = (db.query(DBUser).join(DBUserAddress, DBUser.id == DBUserAddress.id_user)
+             .join(DBAddress, DBUserAddress.id_address == DBAddress.id)
+             .filter(DBUser.dropped == False)
+             .filter(DBUserAddress.valid == True)
+             .filter(DBAddress.dropped == False)
+             .filter(DBAddress.country == country))
+
+    return users
