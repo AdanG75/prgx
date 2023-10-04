@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Body, Path, Query, status
 
+from controller import user_controller
 from schemas.user_schema import UserResponse, UserRequest
 from schemas.compose_schemas import UserResponseAddress, UserRequestAddresses
 from schemas.generic_schemas import BasicResponse
@@ -16,7 +17,8 @@ router = APIRouter(prefix="/user", tags=["User"])
     summary="Get all users"
 )
 async def get_all_users(
-        country: Optional[str] = Query(None, min_length=2, max_length=49)
+        country: Optional[str] = Query(None, min_length=2, max_length=49),
+        test: bool = Query(False)
 ) -> List[UserResponse]:
     """
         GET all users of the system
@@ -29,11 +31,11 @@ async def get_all_users(
         - Return a response body of type List[\'UserResponse\'] with status code 200
     """
     if country is None:
-        pass
+        response = user_controller.get_users(test)
     else:
-        pass
+        response = user_controller.get_users_by_country(country, test)
 
-    return []
+    return response
 
 
 @router.get(
@@ -43,7 +45,8 @@ async def get_all_users(
     summary="Get a user via its ID"
 )
 async def get_user(
-        id_user: int = Path(..., gt=0)
+        id_user: int = Path(..., gt=0),
+        test: bool = Query(False)
 ) -> UserResponse:
     """
     GET a user with specific ID
@@ -51,7 +54,9 @@ async def get_user(
     **Response**
     - Return a response body of type \'UserResponse\' with status code 200
     """
-    pass
+    response = user_controller.get_user_by_id(id_user, test)
+
+    return response
 
 
 @router.post(
@@ -61,7 +66,8 @@ async def get_user(
     summary="Create a User"
 )
 async def create_user(
-        user_schema: UserRequest = Body(...)
+        user_schema: UserRequest = Body(...),
+        test: bool = Query(False)
 ) -> UserResponse:
     """
         POST a user using the request body sent by the customer
@@ -72,7 +78,9 @@ async def create_user(
         **Response**
         - Return a response body of type \'UserResponse\' with status code 201
     """
-    pass
+    response = user_controller.create_user(user_schema, test)
+
+    return response
 
 
 @router.post(
@@ -82,7 +90,8 @@ async def create_user(
     summary="Create a User with its addresses"
 )
 async def create_user_with_addresses(
-        user_schema: UserRequestAddresses = Body(...)
+        user_schema: UserRequestAddresses = Body(...),
+        test: bool = Query(False)
 ) -> UserResponseAddress:
     """
         POST a user with its addresses, using the request body sent by the customer
@@ -93,7 +102,9 @@ async def create_user_with_addresses(
         **Response**
         - Return a response body of type \'UserResponseAddress\' with status code 201
     """
-    pass
+    response = user_controller.create_user_with_addresses(user_schema, test)
+
+    return response
 
 
 @router.patch(
@@ -104,7 +115,8 @@ async def create_user_with_addresses(
 )
 async def update_user(
         id_user: int = Path(..., gt=0),
-        user_schema: UserRequest = Body(...)
+        user_schema: UserRequest = Body(...),
+        test: bool = Query(False)
 ) -> UserResponse:
     """
         PATCH a user in order to update its data
@@ -118,7 +130,9 @@ async def update_user(
         **Response**
         - Return a response body of type \'UserResponse\' with status code 200
     """
-    pass
+    response = user_controller.update_user(id_user, user_schema, test)
+
+    return response
 
 
 @router.put(
@@ -129,7 +143,8 @@ async def update_user(
 )
 async def assign_address_to_user(
         id_user: int = Path(..., gt=0),
-        id_address: int = Path(..., gt=0)
+        id_address: int = Path(..., gt=0),
+        test: bool = Query(False)
 ) -> BasicResponse:
     """
         PUT an address into a user
@@ -141,7 +156,9 @@ async def assign_address_to_user(
         **Response**
         - Return a response body of type \'BasicResponse\' with status code 201
     """
-    pass
+    response = user_controller.assign_address_into_user(id_user, id_address, test)
+
+    return response
 
 
 @router.delete(
@@ -151,7 +168,8 @@ async def assign_address_to_user(
     summary="Delete a specific user"
 )
 async def delete_user(
-        id_user: int = Path(..., gt=0)
+        id_user: int = Path(..., gt=0),
+        test: bool = Query(False)
 ) -> BasicResponse:
     """
         DELETE the user with specific ID
@@ -162,4 +180,6 @@ async def delete_user(
         **Response**
         - Return a response body of type \'BasicResponse\' with status code 200
     """
-    pass
+    response = user_controller.delete_user(id_user, test)
+
+    return response
