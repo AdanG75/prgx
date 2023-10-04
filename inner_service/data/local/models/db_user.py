@@ -17,5 +17,5 @@ class DBUser(Base):
     addresses = relationship(
         'data.local.models,db_address.DBAddress',
         secondary=DBUserAddress,
-        back_populates="usersq"
+        back_populates="users"
     )
